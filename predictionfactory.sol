@@ -11,10 +11,11 @@ contract PredictionFactory is Ownable {
 
   event NewPrediction(uint predictionId, string dna);
 
-  uint predictionFee = 0.001 ether;
+  uint minPredictionFee = 0.001 ether;
 
   struct Prediction {
     string dna;
+    uint investment;
   }
 
   Prediction[] public predictions;
@@ -23,8 +24,8 @@ contract PredictionFactory is Ownable {
   mapping(address => uint) ownerPredictionCount;
 
   function createPrediction(string _dna) external payable {
-    require(msg.value == predictionFee);
-    uint id = predictions.push(Prediction(_dna)) -1;
+    require(msg.value >= minPredictionFee);
+    uint id = predictions.push(Prediction(_dna, msg.value)) -1;
     predictionToOwner[id] = msg.sender;
     ownerpredictionCount[msg.sender] = ownerpredictionCount[msg.sender].add(1);
     NewPrediction(id, _dna);
